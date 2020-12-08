@@ -122,11 +122,15 @@ func saveTokenToDb(accessToken string,refreshToken string)  {
 			return fmt.Errorf("create bucket: %s", err)
 		}
 		err2 := b.Put([]byte("accessToken"), []byte(accessToken))
-		if err2 != nil {
-			return err2;
+		return err2
+	})
+	db.Update(func(tx *bolt.Tx) error {
+		b:= tx.Bucket([]byte("Tokens"))
+		if(b == nil) {
+			return  nil;
 		}
-		err3 := b.Put([]byte("refreshToken"), []byte(refreshToken))
-		return err3
+		err2 := b.Put([]byte("refreshToken"), []byte(refreshToken))
+		return err2
 	})
 	defer db.Close()
 }
