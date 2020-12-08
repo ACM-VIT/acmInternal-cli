@@ -151,6 +151,19 @@ func readTokensFromDb() {
 	defer db.Close()
 }
 
+// func readTokens()<-chan int32 {
+// 	r := make(chan int32)
+
+// 	go func() {
+// 		defer close(r)
+		
+// 		// Simulate a workload.
+// 		readTokensInDb()
+// 	}()
+
+// 	return r
+// }
+
 
 
 
@@ -178,7 +191,7 @@ func checkIfTokensExistInDb()  {
 	var dbFail = false
 	db.View(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte("Tokens"))
-		if b == nil {
+		if b != nil {
 			dbFail = true
 		}
 		return nil
@@ -203,6 +216,37 @@ func checkIfTokensExist() <-chan int32 {
 
 	return r
 }
+
+func delLocalDb() <-chan int32 {
+	r := make(chan int32)
+
+	go func() {
+		defer close(r)
+		
+		// Simulate a workload.
+		db, err := bolt.Open("my.db",0600, &bolt.Options{Timeout: 1 * time.Second})
+		if err != nil {
+		fmt.Printf("read failed");
+		log.Fatal(err)
+	}
+		var dbError = false
+		db.View(func(tx *bolt.Tx) error {
+			b := tx.DeleteBucket([]byte("Tokens"))
+			if b != nil {
+				dbError = true
+			}
+			return nil
+		})
+		defer db.Close()
+		if dbError {
+			fmt.Println("msg:del failed");
+		} else {
+			fmt.Println("msg:del sucess");
+		}
+	}()
+
+	return r
+} 
 
 
 
@@ -256,12 +300,20 @@ func loginReq(email string,pwd string) {
 	
 }
 func userLogin(args []string) {
-	r:= <-checkIfTokensExist();
-	if reflect.TypeOf(r).Kind() != reflect.Int32 {
-		fmt.Printf("debug: check Failed !\n")
-	 } else {
-		 os.Exit(1);
-	 }
+	// //debuggging code
+	// r1:= <-delLocalDb();
+	// if reflect.TypeOf(r1).Kind() != reflect.Int32 {
+	// 	fmt.Printf("debug: check Failed !\n")
+	//  } else {
+	// 	 //os.Exit(1);
+	//  }
+	// r:= <-checkIfTokensExist();
+	// if reflect.TypeOf(r).Kind() != reflect.Int32 {
+	// 	fmt.Printf("debug: check Failed !\n")
+	//  } else {
+	// 	// os.Exit(1);
+	//  }
+	// //  os.Exit(1);
 	fmt.Printf("Enter Your Email: ") 
   
     // var then variable name then variable type 
