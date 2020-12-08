@@ -198,7 +198,7 @@ func loginReq(email string,pwd string) {
 	 
 	 //log.Printf(sb)
 	 if resp.Status != "200 OK" {
-		fmt.Printf("error:Incorrect email or password \n")
+		fmt.Printf("\nerror:Incorrect email or password \n")
 		os.Exit(1)
 	 } 
 	//else process to put accessToken to db
