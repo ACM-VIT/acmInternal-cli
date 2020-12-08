@@ -115,6 +115,14 @@ func getPassword() string {
     return string(passwd)
 }
 
+func fileExists(filename string) bool {
+    info, err := os.Stat(filename)
+    if os.IsNotExist(err) {
+        return false
+    }
+    return !info.IsDir()
+}
+
 func saveTokensToDb(accessToken string,refreshToken string) {
 	d1 := []byte(accessToken);
 	d2 := []byte(refreshToken);
@@ -324,6 +332,11 @@ func userLogin(args []string) {
 	// 	// os.Exit(1);
 	//  }
 	// //  os.Exit(1);
+	if fileExists("accessToken.txt") && fileExists("refreshToken.txt"){
+		fmt.Println("msg:user already logged in");
+		os.Exit(1);
+	}
+
 	fmt.Printf("Enter Your Email: ") 
   
     // var then variable name then variable type 
