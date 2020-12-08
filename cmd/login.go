@@ -29,9 +29,8 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
-	"github.com/boltdb/bolt"
-	"time"
-	"reflect"
+	// "time"
+	// "reflect"
 )
 
 // type dataRespones struct {
@@ -99,6 +98,12 @@ func isEmailValid(e string) bool {
 	return emailRegex.MatchString(e)
 }
 
+func check(e error) {
+    if e != nil {
+        panic(e)
+    }
+}
+
 func getPassword() string {
     // https://godoc.org/golang.org/x/crypto/ssh/terminal#ReadPassword
     // terminal.ReadPassword accepts file descriptor as argument, returns byte slice and error.
@@ -110,143 +115,153 @@ func getPassword() string {
     return string(passwd)
 }
 
-func saveTokenToDb(accessToken string,refreshToken string)  {
-	db, err := bolt.Open("my.db",0600, &bolt.Options{Timeout: 1 * time.Second})
-	if err != nil {
-		fmt.Printf("write failed");
-		log.Fatal(err)
-	}
-	db.Update(func(tx *bolt.Tx) error {
-		b, err1 := tx.CreateBucket([]byte("Tokens"))
-		if err1 != nil {
-			return fmt.Errorf("create bucket: %s", err)
-		}
-		err2 := b.Put([]byte("accessToken"), []byte(accessToken))
-		return err2
-	})
-	db.Update(func(tx *bolt.Tx) error {
-		b:= tx.Bucket([]byte("Tokens"))
-		if(b == nil) {
-			return  nil;
-		}
-		err2 := b.Put([]byte("refreshToken"), []byte(refreshToken))
-		return err2
-	})
-	defer db.Close()
+func saveTokensToDb(accessToken string,refreshToken string) {
+	d1 := []byte(accessToken);
+	d2 := []byte(refreshToken);
+	err1 := ioutil.WriteFile("accessToken.txt", d1, 0644)
+	err2 := ioutil.WriteFile("refreshToken.txt", d2, 0644)
+	check(err1);
+	check(err2)
+	fmt.Printf("\nmsg: Login Sucessful\n");
 }
 
-func readTokensFromDb() {
-	db, err := bolt.Open("my.db",0600, &bolt.Options{Timeout: 1 * time.Second})
-	if err != nil {
-		fmt.Printf("read failed");
-		log.Fatal(err)
-	}
-	db.View(func(tx *bolt.Tx) error {
-		b := tx.Bucket([]byte("Tokens"))
-		v := b.Get([]byte("accessToken"))
-		v2 := b.Get([]byte("refreshToken"))
-		fmt.Printf("The at from db is: %s \n The rt from the bolt db %s \n ", v,v2)
-		return nil
-	})
-	defer db.Close()
-}
+// func saveTokenToDb(accessToken string,refreshToken string)  {
+// 	db, err := bolt.Open("my.db",0600, &bolt.Options{Timeout: 1 * time.Second})
+// 	if err != nil {
+// 		fmt.Printf("write failed");
+// 		log.Fatal(err)
+// 	}
+// 	db.Update(func(tx *bolt.Tx) error {
+// 		b, err1 := tx.CreateBucketIfNotExists([]byte("Tokens"))
+// 		if err1 != nil {
+// 			return fmt.Errorf("create bucket: %s", err)
+// 		}
+// 		err2 := b.Put([]byte("accessToken"), []byte(accessToken))
+// 		return err2
+// 	})
+// 	db.Update(func(tx *bolt.Tx) error {
+// 		b:= tx.Bucket([]byte("Tokens"))
+// 		if(b == nil) {
+// 			return  nil;
+// 		}
+// 		err2 := b.Put([]byte("refreshToken"), []byte(refreshToken))
+// 		return err2
+// 	})
+// 	defer db.Close()
+// }
 
-// func readTokens()<-chan int32 {
+// func readTokensFromDb() {
+// 	db, err := bolt.Open("my.db",0600, &bolt.Options{Timeout: 1 * time.Second})
+// 	if err != nil {
+// 		fmt.Printf("read failed");
+// 		log.Fatal(err)
+// 	}
+// 	db.View(func(tx *bolt.Tx) error {
+// 		b := tx.Bucket([]byte("Tokens"))
+// 		v := b.Get([]byte("accessToken"))
+// 		v2 := b.Get([]byte("refreshToken"))
+// 		fmt.Printf("The at from db is: %s \n The rt from the bolt db %s \n ", v,v2)
+// 		return nil
+// 	})
+// 	defer db.Close()
+// }
+
+// // func readTokens()<-chan int32 {
+// // 	r := make(chan int32)
+
+// // 	go func() {
+// // 		defer close(r)
+		
+// // 		// Simulate a workload.
+// // 		readTokensInDb()
+// // 	}()
+
+// // 	return r
+// // }
+
+
+
+
+
+// func longRunningTask(accessToken string,refreshToken string) <-chan int32 {
 // 	r := make(chan int32)
 
 // 	go func() {
 // 		defer close(r)
 		
 // 		// Simulate a workload.
-// 		readTokensInDb()
+// 		saveTokenToDb(accessToken,refreshToken)
 // 	}()
 
 // 	return r
 // }
 
 
+// func checkIfTokensExistInDb()  {
+// 	db, err := bolt.Open("my.db",0600, &bolt.Options{Timeout: 1 * time.Second})
+// 	if err != nil {
+// 		fmt.Printf("read failed");
+// 		log.Fatal(err)
+// 	}
+// 	var dbFail = false
+// 	db.View(func(tx *bolt.Tx) error {
+// 		b := tx.Bucket([]byte("Tokens"))
+// 		if b != nil {
+// 			dbFail = true
+// 		}
+// 		return nil
+// 	})
+// 	defer db.Close()
+// 	if dbFail {
+// 		fmt.Println("msg:user already logged in ");
+// 	} else {
+// 		fmt.Println("msg:user has to login  ");
+// 	}
+// }
 
+// func checkIfTokensExist() <-chan int32 {
+// 	r := make(chan int32)
 
-
-func longRunningTask(accessToken string,refreshToken string) <-chan int32 {
-	r := make(chan int32)
-
-	go func() {
-		defer close(r)
+// 	go func() {
+// 		defer close(r)
 		
-		// Simulate a workload.
-		saveTokenToDb(accessToken,refreshToken)
-	}()
+// 		// Simulate a workload.
+// 		checkIfTokensExistInDb();
+// 	}()
 
-	return r
-}
+// 	return r
+// }
 
+// func delLocalDb() <-chan int32 {
+// 	r := make(chan int32)
 
-func checkIfTokensExistInDb()  {
-	db, err := bolt.Open("my.db",0600, &bolt.Options{Timeout: 1 * time.Second})
-	if err != nil {
-		fmt.Printf("read failed");
-		log.Fatal(err)
-	}
-	var dbFail = false
-	db.View(func(tx *bolt.Tx) error {
-		b := tx.Bucket([]byte("Tokens"))
-		if b != nil {
-			dbFail = true
-		}
-		return nil
-	})
-	defer db.Close()
-	if dbFail {
-		fmt.Println("msg:user already logged in ");
-	} else {
-		fmt.Println("msg:user has to login  ");
-	}
-}
-
-func checkIfTokensExist() <-chan int32 {
-	r := make(chan int32)
-
-	go func() {
-		defer close(r)
+// 	go func() {
+// 		defer close(r)
 		
-		// Simulate a workload.
-		checkIfTokensExistInDb();
-	}()
+// 		// Simulate a workload.
+// 		db, err := bolt.Open("my.db",0600, &bolt.Options{Timeout: 1 * time.Second})
+// 		if err != nil {
+// 		fmt.Printf("read failed");
+// 		log.Fatal(err)
+// 	}
+// 		var dbError = false
+// 		db.View(func(tx *bolt.Tx) error {
+// 			b := tx.DeleteBucket([]byte("Tokens"))
+// 			if b != nil {
+// 				dbError = true
+// 			}
+// 			return nil
+// 		})
+// 		defer db.Close()
+// 		if dbError {
+// 			fmt.Println("msg:del failed");
+// 		} else {
+// 			fmt.Println("msg:del sucess");
+// 		}
+// 	}()
 
-	return r
-}
-
-func delLocalDb() <-chan int32 {
-	r := make(chan int32)
-
-	go func() {
-		defer close(r)
-		
-		// Simulate a workload.
-		db, err := bolt.Open("my.db",0600, &bolt.Options{Timeout: 1 * time.Second})
-		if err != nil {
-		fmt.Printf("read failed");
-		log.Fatal(err)
-	}
-		var dbError = false
-		db.View(func(tx *bolt.Tx) error {
-			b := tx.DeleteBucket([]byte("Tokens"))
-			if b != nil {
-				dbError = true
-			}
-			return nil
-		})
-		defer db.Close()
-		if dbError {
-			fmt.Println("msg:del failed");
-		} else {
-			fmt.Println("msg:del sucess");
-		}
-	}()
-
-	return r
-} 
+// 	return r
+// } 
 
 
 
@@ -290,15 +305,10 @@ func loginReq(email string,pwd string) {
 		tokens := userInfo["tokens"].(map[string]interface{})
 		accessToken:= tokens["accessToken"].(string)
 		refreshToken:= tokens["refreshToken"].(string)
-		 fmt.Printf("accessToken: %s \n refreshToken: %s" ,accessToken,refreshToken)
-		 r := <-longRunningTask(accessToken,refreshToken)
-		 if reflect.TypeOf(r).Kind() == reflect.Int32 {
-			readTokensFromDb();
-			fmt.Printf("msg: Login Successful !\n")
-		 }
-		
-	
+		// fmt.Printf("accessToken: %s \n refreshToken: %s" ,accessToken,refreshToken)
+		 saveTokensToDb(accessToken,refreshToken);
 }
+
 func userLogin(args []string) {
 	// //debuggging code
 	// r1:= <-delLocalDb();
