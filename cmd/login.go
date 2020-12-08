@@ -110,37 +110,52 @@ func getPassword() string {
     return string(passwd)
 }
 
-func saveTokenToDb(accessToken string)  {
+func saveTokenToDb(accessToken string,refreshToken string)  {
 	db, err := bolt.Open("my.db",0600, &bolt.Options{Timeout: 1 * time.Second})
 	if err != nil {
+		fmt.Printf("write failed");
 		log.Fatal(err)
 	}
 	db.Update(func(tx *bolt.Tx) error {
-		b, err := tx.CreateBucket([]byte("Tokens"))
-		err = b.Put([]byte("accessToken"), []byte(accessToken))
-		if err != nil {
+		b, err1 := tx.CreateBucket([]byte("Tokens"))
+		if err1 != nil {
 			return fmt.Errorf("create bucket: %s", err)
 		}
-		return nil
+		err2 := b.Put([]byte("accessToken"), []byte(accessToken))
+		if err2 != nil {
+			return err2;
+		}
+		err3 := b.Put([]byte("refreshToken"), []byte(refreshToken))
+		return err3
 	})
+	defer db.Close()
+}
+
+func readTokensFromDb() {
+	db, err := bolt.Open("my.db",0600, &bolt.Options{Timeout: 1 * time.Second})
+	if err != nil {
+		fmt.Printf("read failed");
+		log.Fatal(err)
+	}
 	db.View(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte("Tokens"))
 		v := b.Get([]byte("accessToken"))
-		fmt.Printf("The at from db is: %s\n", v)
+		v2 := b.Get([]byte("refreshToken"))
+		fmt.Printf("The at from db is: %s \n The rt from the bolt db %s \n ", v,v2)
 		return nil
 	})
 	defer db.Close()
 }
 
 
-func longRunningTask(accessToken string) <-chan int32 {
+func longRunningTask(accessToken string,refreshToken string) <-chan int32 {
 	r := make(chan int32)
 
 	go func() {
 		defer close(r)
 		
 		// Simulate a workload.
-		saveTokenToDb(accessToken)
+		saveTokenToDb(accessToken,refreshToken)
 	}()
 
 	return r
@@ -188,8 +203,9 @@ func loginReq(email string,pwd string) {
 		accessToken:= tokens["accessToken"].(string)
 		refreshToken:= tokens["refreshToken"].(string)
 		 fmt.Printf("accessToken: %s \n refreshToken: %s" ,accessToken,refreshToken)
-		 r := <-longRunningTask(accessToken)
-		 if reflect.TypeOf(r).Kind() == reflect.Int {
+		 r := <-longRunningTask(accessToken,refreshToken)
+		 if reflect.TypeOf(r).Kind() == reflect.Int32 {
+			readTokensFromDb();
 			fmt.Printf("msg: Login Successful !\n")
 		 }
 		
