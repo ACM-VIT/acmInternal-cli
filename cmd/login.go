@@ -152,6 +152,9 @@ func readTokensFromDb() {
 }
 
 
+
+
+
 func longRunningTask(accessToken string,refreshToken string) <-chan int32 {
 	r := make(chan int32)
 
@@ -164,6 +167,43 @@ func longRunningTask(accessToken string,refreshToken string) <-chan int32 {
 
 	return r
 }
+
+
+func checkIfTokensExistInDb()  {
+	db, err := bolt.Open("my.db",0600, &bolt.Options{Timeout: 1 * time.Second})
+	if err != nil {
+		fmt.Printf("read failed");
+		log.Fatal(err)
+	}
+	var dbFail = false
+	db.View(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte("Tokens"))
+		if b == nil {
+			dbFail = true
+		}
+		return nil
+	})
+	defer db.Close()
+	if dbFail {
+		fmt.Println("msg:user already logged in ");
+	} else {
+		fmt.Println("msg:user has to login  ");
+	}
+}
+
+func checkIfTokensExist() <-chan int32 {
+	r := make(chan int32)
+
+	go func() {
+		defer close(r)
+		
+		// Simulate a workload.
+		checkIfTokensExistInDb();
+	}()
+
+	return r
+}
+
 
 
 func loginReq(email string,pwd string) {
@@ -216,6 +256,12 @@ func loginReq(email string,pwd string) {
 	
 }
 func userLogin(args []string) {
+	r:= <-checkIfTokensExist();
+	if reflect.TypeOf(r).Kind() != reflect.Int32 {
+		fmt.Printf("debug: check Failed !\n")
+	 } else {
+		 os.Exit(1);
+	 }
 	fmt.Printf("Enter Your Email: ") 
   
     // var then variable name then variable type 
