@@ -29,6 +29,9 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
+	"github.com/boltdb/bolt"
+	"time"
+	"reflect"
 )
 
 // type dataRespones struct {
@@ -39,7 +42,7 @@ import (
 // 	pwd string
 // 	profilePic string
 // 	verified bool
-// 	a 
+// 	accounts_connected:
 // }
 
 // type loginResponse struct{
@@ -107,6 +110,43 @@ func getPassword() string {
     return string(passwd)
 }
 
+func saveTokenToDb(accessToken string)  {
+	db, err := bolt.Open("my.db",0600, &bolt.Options{Timeout: 1 * time.Second})
+	if err != nil {
+		log.Fatal(err)
+	}
+	db.Update(func(tx *bolt.Tx) error {
+		b, err := tx.CreateBucket([]byte("Tokens"))
+		err = b.Put([]byte("accessToken"), []byte(accessToken))
+		if err != nil {
+			return fmt.Errorf("create bucket: %s", err)
+		}
+		return nil
+	})
+	db.View(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte("Tokens"))
+		v := b.Get([]byte("accessToken"))
+		fmt.Printf("The at from db is: %s\n", v)
+		return nil
+	})
+	defer db.Close()
+}
+
+
+func longRunningTask(accessToken string) <-chan int32 {
+	r := make(chan int32)
+
+	go func() {
+		defer close(r)
+		
+		// Simulate a workload.
+		saveTokenToDb(accessToken)
+	}()
+
+	return r
+}
+
+
 func loginReq(email string,pwd string) {
 	postBody, _ := json.Marshal(map[string]string{
 		"email": email,
@@ -130,14 +170,29 @@ func loginReq(email string,pwd string) {
 		log.Printf("Check your internet connection");
 		log.Fatalln(err)
 	 }
-	 sb := string(body)
-	 log.Printf(sb)
-	 if resp.Status != "200 OK" {
-		fmt.Printf("error:Incorrect email or password")
-		os.Exit(1)
-	 } else {
-		 fmt.Printf("Login Successful !\n")
+	// sb := string(body)
+	 var data map[string]interface{}
+	 err = json.Unmarshal([]byte(body), &data)
+	 if err != nil {
+		 panic(err)
 	 }
+	 
+	 //log.Printf(sb)
+	 if resp.Status != "200 OK" {
+		fmt.Printf("error:Incorrect email or password \n")
+		os.Exit(1)
+	 } 
+	//else process to put accessToken to db
+	 userInfo := data["data"].(map[string]interface{})
+		tokens := userInfo["tokens"].(map[string]interface{})
+		accessToken:= tokens["accessToken"].(string)
+		refreshToken:= tokens["refreshToken"].(string)
+		 fmt.Printf("accessToken: %s \n refreshToken: %s" ,accessToken,refreshToken)
+		 r := <-longRunningTask(accessToken)
+		 if reflect.TypeOf(r).Kind() == reflect.Int {
+			fmt.Printf("msg: Login Successful !\n")
+		 }
+		
 	
 }
 func userLogin(args []string) {
