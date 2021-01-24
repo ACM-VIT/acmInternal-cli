@@ -17,32 +17,30 @@ package main
 
 import (
 	"acm/cmd"
-	"github.com/joho/godotenv"
-	"log"
-	"os"
+	// "log"
+	// "os"
 )
 
 
-func goDotEnvVariable(key string) string {
+// func goDotEnvVariable(key string) string {
 
-	// load .env file
-	err := godotenv.Load(".env")
+// 	// load .env file
+// 	err := godotenv.Load(".env")
   
-	if err != nil {
-	  log.Fatalf("Error loading .env file")
-	}
+// 	if err != nil {
+// 	  log.Fatalf("Error loading .env file")
+// 	}
   
-	return os.Getenv(key)
-  }
+// 	return os.Getenv(key)
+//   }
   
 
 //BaseURL for  backend
-
 func main() {
-	BaseURL := goDotEnvVariable("BASE_URL");
-	if BaseURL == " " {
-		log.Fatalf("Error in loading BASE_URL from .env file")
-	}
-	cmd.BaseURL = BaseURL;
+	//BaseURL := goDotEnvVariable("BASE_URL");
+	// if BaseURL == " " {
+	// 	log.Fatalf("Error in loading BASE_URL from .env file")
+	// }
+	// cmd.BaseURL = BaseURL;
 	cmd.Execute()
 }
