@@ -17,7 +17,7 @@ package cmd
 
 import (
 	"fmt"
-	auth "acm/cli-auth"
+	auth "acm/cli-core"
 	"github.com/spf13/cobra"
 	"net/http"
 	"io/ioutil"

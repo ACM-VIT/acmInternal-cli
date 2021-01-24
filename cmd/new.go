@@ -19,6 +19,13 @@ import (
 	"fmt"
 	"errors"
 	"github.com/spf13/cobra"
+	auth "acm/cli-core"
+	"encoding/json"
+	"bytes"
+	"net/http"
+	"log"
+	"io/ioutil"
+	"os"
 )
 
 
@@ -30,6 +37,59 @@ func isValidCommand(command string) bool {
 		return true
 	}
 	return false
+}
+
+
+func newProject() {
+	accessToken,err := auth.Login();
+	
+	fmt.Printf("New Project :\n\n");
+
+	var name string;
+	var desc string;
+	var status = "ideation";
+
+
+	postBody, _ := json.Marshal(map[string]string{
+		"name": name,
+		"desc":desc,
+		"status":status,
+	 })
+	 responseBody := bytes.NewBuffer(postBody);
+	 client := &http.Client{};
+	req, _ := http.NewRequest("POST",auth.BaseURL+"/v1/project/fetch/all",responseBody);
+	req.Header.Set("authorization","Bearer " + accessToken);
+	resp, _ := client.Do(req)
+	 if err != nil {
+		log.Fatalf("An Error Occured %v", err)
+	 }
+	 defer resp.Body.Close()
+  //Read the response body
+	 body, err := ioutil.ReadAll(resp.Body)
+	 if err != nil {
+		log.Printf("Check your internet connection");
+		log.Fatalln(err)
+	 }
+	// sb := string(body)
+	 var data map[string]interface{}
+	 err = json.Unmarshal([]byte(body), &data)
+	 if err != nil {
+		 panic(err)
+	 }
+	 
+	 //log.Printf(sb)
+	 if resp.Status != "200 OK" {
+		fmt.Printf("\nerror:Incorrect email or password \n")
+		os.Exit(1)
+	 } 
+
+	 fmt.Println("Sucessfully created project !")
+
+}
+
+func newMeeting() {
+	//accessToken,err := auth.Login();
+	fmt.Println("new meeting");
 }
 
 // newCmd represents the new command
@@ -53,7 +113,11 @@ to quickly create a Cobra application.`,
 		return nil;
   	},
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println(args[0]);
+		switch args[0] {
+			case "project": newProject();
+			case "meeting": newMeeting();
+			default: fmt.Println("invalid argument");	
+			}
 	},
 }
 
