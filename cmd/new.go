@@ -43,11 +43,17 @@ func isValidCommand(command string) bool {
 func newProject() {
 	accessToken,err := auth.Login();
 	
-	fmt.Printf("New Project :\n\n");
+	fmt.Printf("New Project Screen :\n\n");
 
 	var name string;
 	var desc string;
 	var status = "ideation";
+
+	fmt.Printf("Project Name :");
+	fmt.Scanln(&name);
+
+	fmt.Printf("Project Description :");
+	fmt.Scanln(&desc);
 
 
 	postBody, _ := json.Marshal(map[string]string{
@@ -57,7 +63,7 @@ func newProject() {
 	 })
 	 responseBody := bytes.NewBuffer(postBody);
 	 client := &http.Client{};
-	req, _ := http.NewRequest("POST",auth.BaseURL+"/v1/project/fetch/all",responseBody);
+	req, _ := http.NewRequest("POST",auth.BaseURL+"/v1/project/new",responseBody);
 	req.Header.Set("authorization","Bearer " + accessToken);
 	resp, _ := client.Do(req)
 	 if err != nil {
@@ -79,11 +85,11 @@ func newProject() {
 	 
 	 //log.Printf(sb)
 	 if resp.Status != "200 OK" {
-		fmt.Printf("\nerror:Incorrect email or password \n")
+		fmt.Printf("\nerror:Unable to create Project: %v\n",resp.Status);
 		os.Exit(1)
 	 } 
 
-	 fmt.Println("Sucessfully created project !")
+	 fmt.Println("\n Sucessfully created project !")
 
 }
 
