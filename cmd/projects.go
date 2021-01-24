@@ -76,14 +76,15 @@ func displayProjects() {
 		desc:= item.(map[string]interface{})["desc"];
 		status:= item.(map[string]interface{})["status"];
 		founder := item.(map[string]interface{})["founder"];
-		founderName := founder.(map[string]interface{})["name"]
+		founderName := founder.(map[string]interface{})["full_name"];
 
-		fmt.Printf("%d.\n Name: %v \n Desc: %v \n Status: %v \n Founder: %v  \n\n",index+1,name,desc,status,founderName);
+		fmt.Printf("%d.\n Name: %v \n Desc: %v \n Status: %v \n Maintainer: %v  \n\n",index+1,name,desc,status,founderName);
 		//dumpMap(" ",item.(map[string]interface{}));
 	}
 
 	
 }
+
 
 // projectsCmd represents the projects command
 var projectsCmd = &cobra.Command{
