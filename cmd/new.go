@@ -26,6 +26,8 @@ import (
 	"log"
 	"io/ioutil"
 	"os"
+	"bufio"
+	"strings"
 )
 
 
@@ -39,22 +41,48 @@ func isValidCommand(command string) bool {
 	return false
 }
 
+func inputLine(prompt string)(string) {
+	fmt.Print("Enter text: ")
+	reader := bufio.NewReader(os.Stdin)
+	// ReadString will block until the delimiter is entered
+	input, err := reader.ReadString('\n')
+	if err != nil {
+		fmt.Println("An error occured while reading input. Please try again", err)
+		auth.Check(err);
+		return " "
+	}
+
+	// remove the delimeter from the string
+	input = strings.TrimSuffix(input, "\n")
+	return input;
+}
+
 
 func newProject() {
 	accessToken,err := auth.Login();
 	
-	fmt.Printf("New Project Screen :\n\n");
+	fmt.Print("New Project Screen :\n\n");
 
 	var name string;
-	var desc string;
+	
 	var status = "ideation";
 
-	fmt.Printf("Project Name :");
-	fmt.Scanln(&name);
+	//  fmt.Print("Project Name :");
+	// _, errp := fmt.Scanln(&name);
+	// auth.Check(errp);
 
-	fmt.Printf("Project Description :");
-	fmt.Scanln(&desc);
+	name = inputLine("Project Name :");
 
+	var desc string;
+
+	// fmt.Print("Project Desc: ")
+	// _, errq := fmt.Scanln(&name);
+	// auth.Check(errq);
+
+	desc = inputLine("Project Desc :");
+
+
+	
 
 	postBody, _ := json.Marshal(map[string]string{
 		"name": name,
@@ -64,6 +92,7 @@ func newProject() {
 	 responseBody := bytes.NewBuffer(postBody);
 	 client := &http.Client{};
 	req, _ := http.NewRequest("POST",auth.BaseURL+"/v1/project/new",responseBody);
+	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("authorization","Bearer " + accessToken);
 	resp, _ := client.Do(req)
 	 if err != nil {
@@ -86,10 +115,11 @@ func newProject() {
 	 //log.Printf(sb)
 	 if resp.Status != "200 OK" {
 		fmt.Printf("\nerror:Unable to create Project: %v\n",resp.Status);
+		auth.DumpMap("",data);
 		os.Exit(1)
 	 } 
 
-	 fmt.Println("\n Sucessfully created project !")
+	 fmt.Println("Sucessfully created project !")
 
 }
 
