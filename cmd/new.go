@@ -20,7 +20,6 @@ import (
 	"bufio"
 	"bytes"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -31,130 +30,118 @@ import (
 	"github.com/spf13/cobra"
 )
 
-
-func isValidCommand(command string) bool {
-	switch command {
-	case
-		"project",
-		"meeting":
-		return true
-	}
-	return false;
-}
-
-func inputLine(prompt string)(string) {
+func inputLine(prompt string) string {
 	fmt.Print(prompt)
 	reader := bufio.NewReader(os.Stdin)
 	// ReadString will block until the delimiter is entered
 	input, err := reader.ReadString('\n')
 	if err != nil {
 		fmt.Println("An error occured while reading input. Please try again", err)
-		auth.Check(err);
+		auth.Check(err)
 		return " "
 	}
 
 	// remove the delimeter from the string
 	input = strings.TrimSuffix(input, "\n")
-	return input;
+	return input
 }
 
-
 func newProject() {
-	accessToken,err := auth.Login();
-	
-	fmt.Print("New Project Screen :\n\n");
+	accessToken, err := auth.Login()
 
-	var name string;
-	
-	var status = "ideation";
+	fmt.Print("New Project Screen :\n\n")
+
+	var name string
+
+	var status = "ideation"
 
 	//  fmt.Print("Project Name :");
 	// _, errp := fmt.Scanln(&name);
 	// auth.Check(errp);
 
-	name = inputLine("Project Name :");
+	name = inputLine("Project Name :")
 
-	var desc string;
+	var desc string
 
 	// fmt.Print("Project Desc: ")
 	// _, errq := fmt.Scanln(&name);
 	// auth.Check(errq);
 
-	desc = inputLine("Project Desc :");
-
-
-	
+	desc = inputLine("Project Desc :")
 
 	postBody, _ := json.Marshal(map[string]string{
-		"name": name,
-		"desc":desc,
-		"status":status,
-	 })
-	 responseBody := bytes.NewBuffer(postBody);
-	 client := &http.Client{};
-	req, _ := http.NewRequest("POST",auth.BaseURL+"/v1/project/new",responseBody);
+		"name":   name,
+		"desc":   desc,
+		"status": status,
+	})
+	responseBody := bytes.NewBuffer(postBody)
+	client := &http.Client{}
+	req, _ := http.NewRequest("POST", auth.BaseURL+"/v1/project/new", responseBody)
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("authorization","Bearer " + accessToken);
+	req.Header.Set("authorization", "Bearer "+accessToken)
 	resp, _ := client.Do(req)
-	 if err != nil {
+	if err != nil {
 		log.Fatalf("An Error Occured %v", err)
-	 }
-	 defer resp.Body.Close()
-  //Read the response body
-	 body, err := ioutil.ReadAll(resp.Body)
-	 if err != nil {
-		log.Printf("Check your internet connection");
+	}
+	defer resp.Body.Close()
+	//Read the response body
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Printf("Check your internet connection")
 		log.Fatalln(err)
-	 }
+	}
 	// sb := string(body)
-	 var data map[string]interface{}
-	 err = json.Unmarshal([]byte(body), &data)
-	 if err != nil {
-		 panic(err)
-	 }
-	 
-	 //log.Printf(sb)
-	 if resp.Status != "200 OK" {
-		fmt.Printf("\nerror:Unable to create Project: %v\n",resp.Status);
-		auth.DumpMap("",data);
-		os.Exit(1)
-	 } 
+	var data map[string]interface{}
+	err = json.Unmarshal([]byte(body), &data)
+	if err != nil {
+		panic(err)
+	}
 
-	 fmt.Println("Sucessfully created project !")
+	//log.Printf(sb)
+	if resp.Status != "200 OK" {
+		fmt.Printf("\nerror:Unable to create Project: %v\n", resp.Status)
+		auth.DumpMap("", data)
+		os.Exit(1)
+	}
+
+	fmt.Println("Sucessfully created project !")
 
 }
 
 func newMeeting() {
 	//accessToken,err := auth.Login();
-	fmt.Println("new meeting");
+	fmt.Println("new meeting")
+}
+
+func newResource(projectName string) {
+	fmt.Println(projectName)
 }
 
 // newCmd represents the new command
 var newCmd = &cobra.Command{
 	Use:   "new",
-	Short: "use to create a new project or new meeting",
+	Short: "use to create a new project or new meeting or new resource link for a project",
 	Long: `A longer description that spans multiple lines and likely contains examples
 and usage of using your command. For example:
 
 Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
-	Args: func(cmd *cobra.Command, args []string) error {
-		if len(args) < 1 {
-		return errors.New("requires a argument. [either project or meeting]")
-		}
-		
-		if(!isValidCommand(args[0])) {
-			return errors.New("invalid argument. [must be project or meeting]");
-		}
-		return nil;
-  	},
 	Run: func(cmd *cobra.Command, args []string) {
 		switch args[0] {
-			case "project": newProject();
-			case "meeting": newMeeting();
-			default: fmt.Println("invalid argument");	
+		case "project":
+			newProject()
+		case "meeting":
+			newMeeting()
+		case "link":
+			if len(args) < 2 {
+				fmt.Println("please enter a project name as your second argument")
+			} else {
+				newResource(args[1])
 			}
+		default:
+			fmt.Println("invalid argument")
+		}
 	},
 }
 
