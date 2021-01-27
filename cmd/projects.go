@@ -114,8 +114,17 @@ func displayProject(projectName string) {
 		status := item.(map[string]interface{})["status"]
 		founder := item.(map[string]interface{})["founder"]
 		founderName := founder.(map[string]interface{})["full_name"]
-
+		resources, hasResources := item.(map[string]interface{})["resources"]
 		fmt.Printf("%d.\n Name: %v \n Desc: %v \n Status: %v \n Maintainer: %v  \n\n", index+1, name, desc, status, founderName)
+		if hasResources {
+			var re = resources.(map[string]interface{})
+			fmt.Println("Resources: ")
+			var index = 1
+			for reTitle, reLink := range re {
+				fmt.Printf("%d. %v \n %v \n\n ", index, reTitle, reLink)
+				index++
+			}
+		}
 		//dumpMap(" ",item.(map[string]interface{}));
 	}
 	// dumpMap(" ",item.(map[string]interface{}));
