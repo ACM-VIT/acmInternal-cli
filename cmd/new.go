@@ -125,12 +125,14 @@ func newResource(projectName string) {
 	//	fmt.Println(accessToken);
 	client := &http.Client{}
 	req, _ := http.NewRequest("GET", auth.BaseURL+"/v1/project/fetch/byName/"+projectName, nil)
+	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("authorization", "Bearer "+accessToken)
 	res, _ := client.Do(req)
 	if res.Status != "200 OK" {
 		fmt.Printf("\nerror:Unable to fetch Project: %v\n\ninfo: project may not exist or has been deleted from archives \n", projectName)
 		os.Exit(1)
 	}
+	defer res.Body.Close()
 	//buf is byte version of the json body
 	buf, _ := ioutil.ReadAll(res.Body)
 
@@ -140,6 +142,7 @@ func newResource(projectName string) {
 	if err != nil {
 		panic(err)
 	}
+
 	//dumpMap(" ", data)
 	userInfo := data["data"].(map[string]interface{})
 	project := userInfo["project"].([]interface{})
@@ -156,30 +159,33 @@ func newResource(projectName string) {
 		//fmt.Printf("%v \n %v \n %v \n", id, resourceName, resourceLink)
 		//dumpMap(" ",item.(map[string]interface{}));
 		//network request to update the project with the resource link
-		fmt.Printf("%v %v \n", resourceName, resourceLink)
-		postBody, _ := json.Marshal(map[string]string{
+		//fmt.Printf("%v %v \n", resourceName, resourceLink)
+		postBody2, _ := json.Marshal(map[string]string{
 			resourceName: resourceLink,
 		})
-		responseBody := bytes.NewBuffer(postBody)
-		client := &http.Client{}
-		req, _ := http.NewRequest("PUT", auth.BaseURL+"/v1/project/update/projectResourcesLinks/"+id, responseBody)
-		req.Header.Set("authorization", "Bearer "+accessToken)
-		res, _ := client.Do(req)
-		var data map[string]interface{}
-		buf, _ := ioutil.ReadAll(res.Body)
+		reqBody2 := bytes.NewBuffer(postBody2)
+		client2 := &http.Client{}
+		req2, _ := http.NewRequest("PUT", auth.BaseURL+"/v1/project/update/projectResourcesLinks/"+id, reqBody2)
+		//req2, _ := http.NewRequest("PUT", "https://webhook.site/90bd5377-0f66-43b7-8557-fa3bf41522a2", reqBody2)
+		req2.Header.Set("Content-Type", "application/json")
+		req2.Header.Set("authorization", "Bearer "+accessToken)
+		res2, _ := client2.Do(req2)
+		var data2 map[string]interface{}
+		buf2, _ := ioutil.ReadAll(res2.Body)
 
 		//since the json is unstructered we use map
-		err = json.Unmarshal([]byte(buf), &data)
-		if err != nil {
-			panic(err)
+		err2 := json.Unmarshal([]byte(buf2), &data2)
+		if err2 != nil {
+			panic(err2)
 		}
-		fmt.Println(res.Status)
-		dumpMap("", data)
-		if res.Status != "200 OK" {
+		defer res2.Body.Close()
+		//fmt.Println("status ", res2.Status)
+		//dumpMap("", data2)
+		if res2.Status != "200 OK" {
 			fmt.Printf("\nerror:Unable to update project with links:")
 			os.Exit(1)
 		} else {
-			fmt.Printf("\n success: updated project %v with resource links", projectName)
+			fmt.Printf("\n success: updated project %v with resource links\n", projectName)
 		}
 	}
 
