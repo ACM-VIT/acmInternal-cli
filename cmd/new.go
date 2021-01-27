@@ -16,18 +16,19 @@ limitations under the License.
 package cmd
 
 import (
-	"fmt"
-	"errors"
-	"github.com/spf13/cobra"
 	auth "acm/cli-core"
-	"encoding/json"
-	"bytes"
-	"net/http"
-	"log"
-	"io/ioutil"
-	"os"
 	"bufio"
+	"bytes"
+	"encoding/json"
+	"errors"
+	"fmt"
+	"io/ioutil"
+	"log"
+	"net/http"
+	"os"
 	"strings"
+
+	"github.com/spf13/cobra"
 )
 
 
@@ -38,11 +39,11 @@ func isValidCommand(command string) bool {
 		"meeting":
 		return true
 	}
-	return false
+	return false;
 }
 
 func inputLine(prompt string)(string) {
-	fmt.Print("Enter text: ")
+	fmt.Print(prompt)
 	reader := bufio.NewReader(os.Stdin)
 	// ReadString will block until the delimiter is entered
 	input, err := reader.ReadString('\n')
