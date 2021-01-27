@@ -153,9 +153,10 @@ func newResource(projectName string) {
 			fmt.Println("error: resource link must be a valid url")
 			return
 		}
-		fmt.Printf("%v \n %v \n %v \n", id, resourceName, resourceLink)
+		//fmt.Printf("%v \n %v \n %v \n", id, resourceName, resourceLink)
 		//dumpMap(" ",item.(map[string]interface{}));
 		//network request to update the project with the resource link
+		fmt.Printf("%v %v \n", resourceName, resourceLink)
 		postBody, _ := json.Marshal(map[string]string{
 			resourceName: resourceLink,
 		})
@@ -164,20 +165,26 @@ func newResource(projectName string) {
 		req, _ := http.NewRequest("PUT", auth.BaseURL+"/v1/project/update/projectResourcesLinks/"+id, responseBody)
 		req.Header.Set("authorization", "Bearer "+accessToken)
 		res, _ := client.Do(req)
-		if res.Status != "200 OK" {
-			fmt.Printf("\nerror:Unable to update project with links:")
-			os.Exit(1)
-		}
-		//buf is byte version of the json body
+		var data map[string]interface{}
 		buf, _ := ioutil.ReadAll(res.Body)
 
 		//since the json is unstructered we use map
-		var data map[string]interface{}
 		err = json.Unmarshal([]byte(buf), &data)
 		if err != nil {
 			panic(err)
 		}
+		fmt.Println(res.Status)
+		dumpMap("", data)
+		if res.Status != "200 OK" {
+			fmt.Printf("\nerror:Unable to update project with links:")
+			os.Exit(1)
+		} else {
+			fmt.Printf("\n success: updated project %v with resource links", projectName)
+		}
 	}
+
+	//buf is byte version of the json body
+
 }
 
 // newCmd represents the new command
