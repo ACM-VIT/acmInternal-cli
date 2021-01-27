@@ -120,13 +120,13 @@ func newResource(projectName string) {
 // newCmd represents the new command
 var newCmd = &cobra.Command{
 	Use:   "new",
-	Short: "use to create a new project or new meeting or new resource link for a project",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "use to create a new project or new meeting or new link for a project",
+	Long: ` 
+	Takes 3 arguments types :
+	acm new project [to generate a new project]
+	acm new meeting [to generate a new meeting]
+	acm new link (projectName) [to add a new resource link to a existing project]
+`,
 	Run: func(cmd *cobra.Command, args []string) {
 		switch args[0] {
 		case "project":
@@ -135,7 +135,7 @@ to quickly create a Cobra application.`,
 			newMeeting()
 		case "link":
 			if len(args) < 2 {
-				fmt.Println("please enter a project name as your second argument")
+				fmt.Println("please enter a project name as your second argument: [acm new link (projectName)]")
 			} else {
 				newResource(args[1])
 			}

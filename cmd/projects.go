@@ -126,12 +126,9 @@ func displayProject(projectName string) {
 var projectsCmd = &cobra.Command{
 	Use:   "projects",
 	Short: "get all projects or search for a single project by adding it as a argument",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Long: `Two forms:
+	Type:  acm projects [to get all projects]
+	Type:  acm projects (projectName)  [to get a single project]`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 1 {
 			displayProjects()

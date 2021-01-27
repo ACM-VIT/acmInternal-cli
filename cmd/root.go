@@ -17,8 +17,9 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/spf13/cobra"
 	"os"
+
+	"github.com/spf13/cobra"
 
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/viper"
@@ -33,14 +34,12 @@ var rootCmd = &cobra.Command{
 	Long: `A longer description that spans multiple lines and likely contains
 examples and usage of using your application. For example:
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+Type:  acm help (commandName) to get the full usage of a command`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("Acm Internal EcoSystem v3.4.0");
-	 },
+		fmt.Println("Acm Internal EcoSystem v3.4.0")
+	},
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
