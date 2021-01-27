@@ -16,23 +16,24 @@ limitations under the License.
 package cmd
 
 import (
-	"fmt"
 	auth "acm/cli-core"
-	"github.com/spf13/cobra"
-	"net/http"
+	"fmt"
 	"io/ioutil"
+	"net/http"
+
+	"github.com/spf13/cobra"
+
 	//"github.com/buger/jsonparser"
 	"encoding/json"
 	"os"
 )
 
-type project struct{
-	id string
-	name string
-	desc string
+type project struct {
+	id     string
+	name   string
+	desc   string
 	status string
 }
-
 
 func dumpMap(space string, m map[string]interface{}) {
 	for k, v := range m {
@@ -46,22 +47,21 @@ func dumpMap(space string, m map[string]interface{}) {
 	}
 }
 
-
 func displayProjects() {
-	accessToken,err := auth.Login();
-	auth.Check(err);
-//	fmt.Println(accessToken);
-	client := &http.Client{};
-	req, _ := http.NewRequest("GET",auth.BaseURL+"/v1/project/fetch/all",nil);
-	req.Header.Set("authorization","Bearer " + accessToken);
+	accessToken, err := auth.Login()
+	auth.Check(err)
+	//	fmt.Println(accessToken);
+	client := &http.Client{}
+	req, _ := http.NewRequest("GET", auth.BaseURL+"/v1/project/fetch/all", nil)
+	req.Header.Set("authorization", "Bearer "+accessToken)
 	res, _ := client.Do(req)
-	fmt.Println("Projects by Acm");
+	fmt.Println("Projects by Acm")
 	if res.Status != "200 OK" {
 		fmt.Printf("\nerror:Unable to fetch Projects\n")
 		os.Exit(1)
-	 } 
+	}
 	//buf is byte version of the json body
-	buf, _ := ioutil.ReadAll(res.Body);
+	buf, _ := ioutil.ReadAll(res.Body)
 
 	//since the json is unstructered we use map
 	var data map[string]interface{}
@@ -69,22 +69,58 @@ func displayProjects() {
 	if err != nil {
 		panic(err)
 	}
-	userInfo := data["data"].(map[string]interface{});
+	userInfo := data["data"].(map[string]interface{})
 	allProjects := userInfo["allProjects"].([]interface{})
-	for index,item :=range allProjects {
-		name:= item.(map[string]interface{})["name"];
-		desc:= item.(map[string]interface{})["desc"];
-		status:= item.(map[string]interface{})["status"];
-		founder := item.(map[string]interface{})["founder"];
-		founderName := founder.(map[string]interface{})["full_name"];
+	for index, item := range allProjects {
+		name := item.(map[string]interface{})["name"]
+		desc := item.(map[string]interface{})["desc"]
+		status := item.(map[string]interface{})["status"]
+		founder := item.(map[string]interface{})["founder"]
+		founderName := founder.(map[string]interface{})["full_name"]
 
-		fmt.Printf("%d.\n Name: %v \n Desc: %v \n Status: %v \n Maintainer: %v  \n\n",index+1,name,desc,status,founderName);
+		fmt.Printf("%d.\n Name: %v \n Desc: %v \n Status: %v \n Maintainer: %v  \n\n", index+1, name, desc, status, founderName)
 		//dumpMap(" ",item.(map[string]interface{}));
 	}
 
-	
 }
 
+func displayProject(projectName string) {
+	accessToken, err := auth.Login()
+	auth.Check(err)
+	//	fmt.Println(accessToken);
+	client := &http.Client{}
+	req, _ := http.NewRequest("GET", auth.BaseURL+"/v1/project/fetch/byName/"+projectName, nil)
+	req.Header.Set("authorization", "Bearer "+accessToken)
+	res, _ := client.Do(req)
+	if res.Status != "200 OK" {
+		fmt.Printf("\nerror:Unable to fetch Project: %v\n\ninfo: project may not exist or has been deleted from archives \n", projectName)
+		os.Exit(1)
+	}
+	//buf is byte version of the json body
+	buf, _ := ioutil.ReadAll(res.Body)
+
+	//since the json is unstructered we use map
+	var data map[string]interface{}
+	err = json.Unmarshal([]byte(buf), &data)
+	if err != nil {
+		panic(err)
+	}
+	//dumpMap(" ", data)
+	userInfo := data["data"].(map[string]interface{})
+	project := userInfo["project"].([]interface{})
+	for index, item := range project {
+		name := item.(map[string]interface{})["name"]
+		desc := item.(map[string]interface{})["desc"]
+		status := item.(map[string]interface{})["status"]
+		founder := item.(map[string]interface{})["founder"]
+		founderName := founder.(map[string]interface{})["full_name"]
+
+		fmt.Printf("%d.\n Name: %v \n Desc: %v \n Status: %v \n Maintainer: %v  \n\n", index+1, name, desc, status, founderName)
+		//dumpMap(" ",item.(map[string]interface{}));
+	}
+	// dumpMap(" ",item.(map[string]interface{}));
+
+}
 
 // projectsCmd represents the projects command
 var projectsCmd = &cobra.Command{
@@ -97,7 +133,12 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		displayProjects();
+		if len(args) < 1 {
+			displayProjects()
+		} else {
+			displayProject(args[0])
+		}
+
 	},
 }
 
