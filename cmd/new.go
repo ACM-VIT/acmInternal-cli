@@ -70,10 +70,23 @@ func newProject() {
 
 	desc = inputLine("Project Desc :")
 
-	postBody, _ := json.Marshal(map[string]string{
-		"name":   name,
-		"desc":   desc,
-		"status": status,
+	var tagsInput string
+
+	tagsInput = inputLine("Project tags [domain/topics etc, seprated by commas in input] :\n")
+
+	tags := strings.Split(tagsInput, ",")
+
+	type Request struct {
+		Name   string   `json:"name"`
+		Desc   string   `json:"desc"`
+		Status string   `json:"status"`
+		Tags   []string `json:"tags"`
+	}
+	postBody, _ := json.Marshal(Request{
+		Name:   name,
+		Desc:   desc,
+		Status: status,
+		Tags:   tags,
 	})
 	responseBody := bytes.NewBuffer(postBody)
 	client := &http.Client{}
@@ -216,7 +229,7 @@ var newCmd = &cobra.Command{
 				newResource(args[1])
 			}
 		default:
-			fmt.Println("invalid argument")
+			fmt.Println("invalid argument: \nType: acm help new ")
 		}
 	},
 }
