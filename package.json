@@ -1,0 +1,32 @@
+{
+  "name": "acminternal-cli",
+  "version": "1.0.2",
+  "description": "acmvit's official cli/terminal application",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postinstall": "go-npm install",
+    "preuninstall": "go-npm uninstall"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ACM-VIT/acmInternal-cli.git"
+  },
+  "keywords": [
+    "golang"
+  ],
+  "author": "madrigal1",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ACM-VIT/acmInternal-cli/issues"
+  },
+  "homepage": "https://github.com/ACM-VIT/acmInternal-cli#readme",
+  "dependencies": {
+    "go-npm": "^0.1.9"
+  },
+  "goBinary": {
+    "name": "acm",
+    "path": "./bin",
+    "url": "https://github.com/ACM-VIT/acmInternal-cli/releases/download/v{{version}}/acmInternal-cli_{{version}}_{{platform}}_{{arch}}.tar.gz"
+  }
+}
