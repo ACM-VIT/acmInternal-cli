@@ -1,6 +1,6 @@
 {
   "name": "acminternal-cli",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "acmvit's official cli/terminal application",
   "main": "index.js",
   "scripts": {
