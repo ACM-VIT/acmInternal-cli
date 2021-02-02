@@ -14,7 +14,6 @@ builds:
       - windows
       - darwin
 archives:
-  - name_template: "acmvit_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
   - replacements:
       darwin: darwin
       linux: linux
