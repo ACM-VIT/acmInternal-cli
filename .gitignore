@@ -2,3 +2,4 @@
 *.txt
 dist/
 bin/
+node_modules
