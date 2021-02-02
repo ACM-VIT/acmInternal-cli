@@ -1,6 +1,6 @@
 {
   "name": "acmvit",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "acmvit's official cli/terminal application",
   "main": "index.js",
   "scripts": {
