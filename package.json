@@ -25,8 +25,8 @@
     "go-npm": "^0.1.9"
   },
   "goBinary": {
-    "name": "acmInternal-cli",
+    "name": "acmvit",
     "path": "./bin",
-    "url": "https://github.com/ACM-VIT/acmInternal-cli/releases/download/v{{version}}/acmInternal-cli_{{version}}_{{platform}}_{{arch}}.tar.gz"
+    "url": "https://github.com/ACM-VIT/acmInternal-cli/releases/download/v{{version}}/acmvit_{{version}}_{{platform}}_{{arch}}.tar.gz"
   }
 }
