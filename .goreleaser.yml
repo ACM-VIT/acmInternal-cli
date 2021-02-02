@@ -7,7 +7,6 @@ before:
     # you may remove this if you don't need go generate
     - go generate ./...
 builds:
-  - binary: acm
   - env:
       - CGO_ENABLED=0
     goos:
@@ -15,6 +14,7 @@ builds:
       - windows
       - darwin
 archives:
+  - name_template: "acmvit_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
   - replacements:
       darwin: darwin
       linux: linux
