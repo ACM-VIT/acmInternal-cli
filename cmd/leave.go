@@ -67,13 +67,12 @@ func leaveProject(projectName string) {
 // leaveCmd represents the leave command
 var leaveCmd = &cobra.Command{
 	Use:   "leave",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Use command to leave a project",
+	Long: `Usage:
+	acm leave (projectname)
+	
+tip: after a sucess message use acm projects (projectName)
+	  to see detailed info`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) != 1 {
 			fmt.Println(" error : command requires the name of the project you wanna leave as argument.\n put in quotes if it contains a space or more than one word")
