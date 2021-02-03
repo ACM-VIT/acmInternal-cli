@@ -27,6 +27,6 @@
   "goBinary": {
     "name": "acmvit",
     "path": "./bin",
-    "url": "https://github.com/ACM-VIT/acmInternal-cli/releases/download/v{{version}}/acmvit_{{version}}_{{platform}}_{{arch}}.tar.gz"
+    "url": "https://github.com/ACM-VIT/acmInternal-cli/releases/download/v{{version}}/acm_{{version}}_{{platform}}_{{arch}}.tar.gz"
   }
 }
