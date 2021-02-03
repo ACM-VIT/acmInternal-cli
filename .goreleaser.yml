@@ -7,21 +7,15 @@ before:
     # you may remove this if you don't need go generate
     - go generate ./...
 builds:
-  - id: "acmvit"
-  - env:
-      - CGO_ENABLED=0
+  - main: ./main.go
+    id: "acm"
+    binary: acm
     goos:
       - linux
-      - windows
       - darwin
+      - windows
 archives:
-  - name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
-  - replacements:
-      darwin: darwin
-      linux: linux
-      windows: windows
-      386: 386
-      amd64: amd64
+  - name_template: "acm_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
 checksum:
   name_template: "checksums.txt"
 snapshot:
