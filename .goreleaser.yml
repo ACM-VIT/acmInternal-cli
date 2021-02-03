@@ -8,14 +8,14 @@ before:
     - go generate ./...
 builds:
   - main: ./main.go
-    id: "acm"
-    binary: acm
+    id: "acmvit"
+    binary: acmvit
     goos:
       - linux
       - darwin
       - windows
 archives:
-  - name_template: "acm_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+  - name_template: "acmvit_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
 checksum:
   name_template: "checksums.txt"
 snapshot:
