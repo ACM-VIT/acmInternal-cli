@@ -217,6 +217,10 @@ var newCmd = &cobra.Command{
 	acm new link (projectName) [to add a new resource link to a existing project]
 `,
 	Run: func(cmd *cobra.Command, args []string) {
+		if len(args) < 2 {
+			fmt.Println("invalid argument: \nType: acm help new ")
+			return
+		}
 		switch args[0] {
 		case "project":
 			newProject()
