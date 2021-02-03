@@ -77,8 +77,23 @@ func displayProjects() {
 		status := item.(map[string]interface{})["status"]
 		founder := item.(map[string]interface{})["founder"]
 		founderName := founder.(map[string]interface{})["full_name"]
+		tags, hasTags := item.(map[string]interface{})["tags"]
+		fmt.Printf("%d.\n Name: %v \n Desc: %v \n Status: %v \n Maintainer: %v  \n", index+1, name, desc, status, founderName)
 
-		fmt.Printf("%d.\n Name: %v \n Desc: %v \n Status: %v \n Maintainer: %v  \n\n", index+1, name, desc, status, founderName)
+		if hasTags {
+			var tarray = tags.([]interface{})
+			if len(tarray) < 1 {
+				continue
+			}
+			fmt.Printf(" Tags: ")
+			for index, tag := range tarray {
+				if index != len(tarray)-1 {
+					fmt.Printf("%v,", tag)
+				} else {
+					fmt.Printf("%v \n", tag)
+				}
+			}
+		}
 		//dumpMap(" ",item.(map[string]interface{}));
 	}
 
@@ -116,7 +131,22 @@ func displayProject(projectName string) {
 		founderName := founder.(map[string]interface{})["full_name"]
 		resources, hasResources := item.(map[string]interface{})["resources"]
 		teamMembers, hasTeamMembers := item.(map[string]interface{})["teamMembers"]
-		fmt.Printf("%d.\n Name: %v \n Desc: %v \n Status: %v \n Maintainer: %v  \n\n", index+1, name, desc, status, founderName)
+		tags, hasTags := item.(map[string]interface{})["tags"]
+		fmt.Printf("%d.\n Name: %v \n Desc: %v \n Status: %v \n Maintainer: %v  \n", index+1, name, desc, status, founderName)
+		if hasTags {
+			var tarray = tags.([]interface{})
+			if len(tarray) < 1 {
+				continue
+			}
+			fmt.Printf(" Tags: ")
+			for index, tag := range tarray {
+				if index != len(tarray)-1 {
+					fmt.Printf("%v,", tag)
+				} else {
+					fmt.Printf("%v \n", tag)
+				}
+			}
+		}
 		if hasResources {
 			var re = resources.(map[string]interface{})
 			fmt.Println("Resources: ")
