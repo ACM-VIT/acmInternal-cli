@@ -61,12 +61,7 @@ var cancelCmd = &cobra.Command{
 	Short: "cancel your meeting using title",
 	Long: "usage:\nType: acm cancel (meetingTitle)",
 	Run: func(cmd *cobra.Command, args []string) {
-		if len(args) < 1 {
-			fmt.Println("error: invalid argument:type acm help cancel")
-			os.Exit(1)
-		} else {
 			cancelMeeting();
-		}
 	},
 }
 
