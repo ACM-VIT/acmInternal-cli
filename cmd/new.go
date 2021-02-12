@@ -134,7 +134,7 @@ func newMeeting() {
 	about = inputLine(`Input the description of meeting: `);
 
 	var datetime string;
-	datetime = inputLine(`Input the date time in iso: [yyyy-mm-ddTxx-xx-xx]`);
+	datetime = inputLine("Input the date time in iso: [yyyy-mm-ddTxx-xx-xx]: \n");
 
 	type Request struct {
 		Title string `json:"title"`
@@ -159,6 +159,7 @@ func newMeeting() {
 		fmt.Println("sucess: Successfully created Meeting in db and google calender")
 	}
 	defer res.Body.Close();
+	return;
 }
 
 func isURL(str string) bool {
@@ -251,21 +252,24 @@ var newCmd = &cobra.Command{
 	acm new link (projectName) [to add a new resource link to a existing project]
 `,
 	Run: func(cmd *cobra.Command, args []string) {
-		if len(args) < 2 {
-			fmt.Println("invalid argument: \nType: acm help new ")
+		if len(args) < 1 {
+			fmt.Println("error: argument required\nType: acm help new ")
 			return
 		}
 		switch args[0] {
 		case "project":
 			newProject()
+			break
 		case "meeting":
 			newMeeting()
+			break
 		case "link":
 			if len(args) < 2 {
 				fmt.Println("please enter a project name as your second argument: [acm new link (projectName)]")
 			} else {
 				newResource(args[1])
 			}
+			break;
 		default:
 			fmt.Println("invalid argument: \nType: acm help new ")
 		}
