@@ -59,7 +59,7 @@ func cancelMeeting() {
 var cancelCmd = &cobra.Command{
 	Use:   "cancel",
 	Short: "cancel your meeting using title",
-	Long: "usage:\nType: acm cancel (meetingTitle)",
+	Long: "usage:\nType: acm cancel",
 	Run: func(cmd *cobra.Command, args []string) {
 			cancelMeeting();
 	},
