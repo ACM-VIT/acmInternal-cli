@@ -38,7 +38,7 @@ Type:  acm help (commandName) to get the full usage of a command`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("Acm Internal EcoSystem v3.4.0")
+		fmt.Println("Acm Internal EcoSystem v0.0.11")
 	},
 }
 
