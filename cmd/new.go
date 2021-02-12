@@ -123,8 +123,42 @@ func newProject() {
 }
 
 func newMeeting() {
-	//accessToken,err := auth.Login();
-	fmt.Println("new meeting")
+	accessToken, err := auth.Login()
+	auth.Check(err)
+	//	fmt.Println(accessToken);
+
+	var title string;
+	title = inputLine(`Input title of meeting: `);
+
+	var about string;
+	about = inputLine(`Input the description of meeting: `);
+
+	var datetime string;
+	datetime = inputLine(`Input the date time in iso: [yyyy-mm-ddTxx-xx-xx]`);
+
+	type Request struct {
+		Title string `json:"title"`
+		About string `json:"about"`
+		Start string `json:"start"`
+	}
+	postBody, _ := json.Marshal(Request{
+		Title:   title,
+		About:   about,
+		Start:    datetime,
+	})
+	responseBody := bytes.NewBuffer(postBody)
+	client := &http.Client{}
+	req, _ := http.NewRequest("POST", auth.BaseURL+"/v1/meeting/new", responseBody)
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("authorization", "Bearer "+accessToken)
+	res, _ := client.Do(req)
+	if res.Status != "200 OK" {
+		fmt.Printf("\nerror:Unable to fetch Project: %v\n\ninfo: project may not exist or has been deleted from archives \n", projectName)
+		os.Exit(1)
+	} else {
+		fmt.Println("sucess: Successfully created Meeting in db and google calender")
+	}
+	defer res.Body.Close();
 }
 
 func isURL(str string) bool {
