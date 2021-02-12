@@ -134,7 +134,7 @@ func newMeeting() {
 	about = inputLine(`Input the description of meeting: `);
 
 	var datetime string;
-	datetime = inputLine("Input the date time in iso: [yyyy-mm-ddTxx-xx-xx]: \n");
+	datetime = inputLine("Input the date time in iso: [yyyy-mm-ddTxx-xx-xx] [xx-xx-xx is time in 24hrs)]: \n");
 
 	type Request struct {
 		Title string `json:"title"`

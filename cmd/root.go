@@ -30,15 +30,12 @@ var cfgFile string
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "acm",
-	Short: "A brief description of your application",
-	Long: `A longer description that spans multiple lines and likely contains
-examples and usage of using your application. For example:
-
-Type:  acm help (commandName) to get the full usage of a command`,
+	Short: "the official acm terminal",
+	Long: "One of the frontends to the acm internal ecosystem.\ncheck out the acmvit github org for more info",
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("Acm Internal EcoSystem v0.0.11")
+		fmt.Println("Acm Internal EcoSystem v1.1.0")
 	},
 }
 

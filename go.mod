@@ -14,7 +14,7 @@ require (
 	github.com/mitchellh/gox v1.0.1 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/rapidloop/skv v0.0.0-20180909015525-9def2caac4cc // indirect
-	github.com/spf13/cobra v1.1.1
+	github.com/spf13/cobra v1.1.3
 	github.com/spf13/viper v1.7.1
 	github.com/tcnksm/ghr v0.13.0 // indirect
 	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
