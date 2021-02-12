@@ -153,7 +153,7 @@ func newMeeting() {
 	req.Header.Set("authorization", "Bearer "+accessToken)
 	res, _ := client.Do(req)
 	if res.Status != "200 OK" {
-		fmt.Printf("\nerror:Unable to fetch Project: %v\n\ninfo: project may not exist or has been deleted from archives \n", projectName)
+		fmt.Printf("error:failed to create a meeting")
 		os.Exit(1)
 	} else {
 		fmt.Println("sucess: Successfully created Meeting in db and google calender")
